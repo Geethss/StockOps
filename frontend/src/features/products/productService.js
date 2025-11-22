@@ -21,11 +21,6 @@ export const productService = {
     return response.data
   },
 
-  deleteProduct: async (id) => {
-    const response = await api.delete(`/products/${id}`)
-    return response.data
-  },
-
   searchProducts: async (query) => {
     const response = await api.get('/products/search', { params: { q: query } })
     return response.data

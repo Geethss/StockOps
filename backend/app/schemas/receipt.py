@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import datetime
+from pydantic import BaseModel, Field, field_validator
+from typing import List, Optional, Union, Any
+from datetime import datetime, date
 from app.models.receipt import ReceiptStatus
 
 class ReceiptItemCreate(BaseModel):
@@ -12,8 +12,34 @@ class ReceiptCreate(BaseModel):
     receive_from: str = Field(..., min_length=1)
     warehouse_id: str
     location_id: str
-    schedule_date: datetime
+    schedule_date: Union[datetime, str]  # Accept datetime or ISO string
     products: List[ReceiptItemCreate] = Field(..., min_length=1)
+    
+    @field_validator('schedule_date', mode='before')
+    @classmethod
+    def parse_schedule_date(cls, v: Any) -> datetime:
+        if isinstance(v, str):
+            # Try to parse ISO datetime string
+            try:
+                # If it's just a date string (YYYY-MM-DD), add time
+                if len(v) == 10:
+                    v = f"{v}T00:00:00Z"
+                # Handle ISO format
+                if v.endswith('Z'):
+                    v = v[:-1] + '+00:00'
+                return datetime.fromisoformat(v)
+            except (ValueError, AttributeError):
+                # Try parsing as date YYYY-MM-DD
+                try:
+                    parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
+                    return datetime.combine(parsed_date, datetime.min.time())
+                except ValueError:
+                    raise ValueError(f"Invalid date format: {v}. Expected YYYY-MM-DD or ISO datetime string.")
+        elif isinstance(v, datetime):
+            return v
+        elif isinstance(v, date):
+            return datetime.combine(v, datetime.min.time())
+        raise ValueError(f"Cannot convert {type(v)} to datetime")
 
 class ReceiptItemResponse(BaseModel):
     id: str

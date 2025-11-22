@@ -15,6 +15,12 @@ const DeliveryForm = ({ delivery, onCancel }) => {
   const [outOfStockItems, setOutOfStockItems] = useState([])
   const queryClient = useQueryClient()
 
+  // Reset form state
+  const resetForm = () => {
+    setItems([{ product_id: '', quantity: 1 }])
+    setOutOfStockItems([])
+  }
+
   const { data: products } = useQuery({
     queryKey: ['products'],
     queryFn: () => productService.getProducts(),
@@ -29,6 +35,7 @@ const DeliveryForm = ({ delivery, onCancel }) => {
     defaultValues: delivery || {
       schedule_date: new Date().toISOString().split('T')[0],
     },
+    mode: 'onBlur',
   })
 
   const warehouseId = watch('warehouse_id')
@@ -44,12 +51,29 @@ const DeliveryForm = ({ delivery, onCancel }) => {
     onSuccess: () => {
       queryClient.invalidateQueries(['deliveries'])
       toast.success('Delivery created successfully!')
+      // Reset form state
+      resetForm()
       onCancel()
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'Failed to create delivery')
-      if (error.response?.data?.out_of_stock) {
-        setOutOfStockItems(error.response.data.out_of_stock)
+      console.error('Delivery creation error:', error)
+      console.error('Error response:', error.response?.data)
+      
+      const detail = error.response?.data?.detail
+      console.error('Error detail:', detail)
+      
+      if (typeof detail === 'object' && detail !== null && detail.out_of_stock) {
+        const message = detail.message || 'Insufficient stock for some products'
+        console.log('Out of stock items:', detail.out_of_stock)
+        toast.error(message)
+        setOutOfStockItems(Array.isArray(detail.out_of_stock) ? detail.out_of_stock : [])
+      } else if (typeof detail === 'object' && detail !== null) {
+        // Handle other structured errors
+        const message = detail.message || JSON.stringify(detail)
+        toast.error(message)
+      } else {
+        // Handle string error messages
+        toast.error(typeof detail === 'string' ? detail : error.message || 'Failed to create delivery')
       }
     },
   })
@@ -69,13 +93,42 @@ const DeliveryForm = ({ delivery, onCancel }) => {
   }
 
   const onSubmit = (data) => {
+    // Validate that all products are selected
+    const invalidItems = items.filter(item => !item.product_id || item.product_id === '')
+    if (invalidItems.length > 0) {
+      toast.error('Please select a product for all items')
+      return
+    }
+
+    // Validate that all quantities are valid
+    const invalidQuantities = items.filter(item => !item.quantity || parseFloat(item.quantity) <= 0)
+    if (invalidQuantities.length > 0) {
+      toast.error('Please enter valid quantities (greater than 0)')
+      return
+    }
+
+    // Convert date string to ISO datetime string
+    const scheduleDate = data.schedule_date
+      ? new Date(data.schedule_date + 'T00:00:00').toISOString()
+      : new Date().toISOString()
+
     const deliveryData = {
       ...data,
-      products: items.map(item => ({
-        product_id: item.product_id,
-        quantity: parseInt(item.quantity),
-      })),
+      schedule_date: scheduleDate,
+      products: items
+        .filter(item => item.product_id && item.product_id !== '') // Filter out empty items
+        .map(item => ({
+          product_id: item.product_id,
+          quantity: parseFloat(item.quantity),
+        })),
     }
+    
+    // Validate products array is not empty
+    if (deliveryData.products.length === 0) {
+      toast.error('Please add at least one product')
+      return
+    }
+
     createMutation.mutate(deliveryData)
   }
 

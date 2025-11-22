@@ -16,6 +16,16 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    receipts = relationship("Receipt", back_populates="responsible_user")
-    deliveries = relationship("Delivery", back_populates="responsible_user")
+    # Specify primaryjoin because Receipt/Delivery have multiple FKs to User (responsible and validated_by)
+    # This tells SQLAlchemy to use the 'responsible' foreign key, not 'validated_by'
+    receipts = relationship(
+        "Receipt", 
+        back_populates="responsible_user", 
+        primaryjoin="User.id == Receipt.responsible"
+    )
+    deliveries = relationship(
+        "Delivery", 
+        back_populates="responsible_user", 
+        primaryjoin="User.id == Delivery.responsible"
+    )
 

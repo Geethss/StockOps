@@ -49,9 +49,17 @@ const Locations = () => {
     },
   })
 
-  const { register, handleSubmit, watch, formState: { errors }, reset } = useForm()
+  const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
+    mode: 'onBlur', // Only validate on blur
+  })
 
   const onSubmit = (data) => {
+    // Validate warehouse_id is selected
+    if (!data.warehouse_id || data.warehouse_id === '') {
+      toast.error('Please select a warehouse')
+      return
+    }
+    
     if (selectedLocation) {
       updateMutation.mutate({ id: selectedLocation.id, data })
     } else {
@@ -156,9 +164,18 @@ const Locations = () => {
           <Select
             label="Warehouse"
             options={warehouses?.map(w => ({ value: w.id, label: w.name })) || []}
-            {...register('warehouse_id', { required: 'Warehouse is required' })}
+            {...register('warehouse_id', { 
+              required: 'Warehouse is required',
+              validate: (value) => value !== '' || 'Please select a warehouse'
+            })}
             error={errors.warehouse_id?.message}
+            disabled={!warehouses || warehouses.length === 0}
           />
+          {(!warehouses || warehouses.length === 0) && (
+            <p className="text-sm text-amber-600">
+              No warehouses available. Please create a warehouse first.
+            </p>
+          )}
           <div className="flex justify-end space-x-3 pt-4">
             <Button type="button" variant="secondary" onClick={() => {
               setShowForm(false)

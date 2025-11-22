@@ -1,10 +1,12 @@
-const Input = ({ 
+import { forwardRef } from 'react'
+
+const Input = forwardRef(({ 
   label, 
   type = 'text', 
   error, 
   className = '',
   ...props 
-}) => {
+}, ref) => {
   return (
     <div className="w-full">
       {label && (
@@ -13,6 +15,7 @@ const Input = ({
         </label>
       )}
       <input
+        ref={ref}
         type={type}
         className={`input ${error ? 'border-red-500 focus:ring-red-500' : ''} ${className}`}
         {...props}
@@ -22,7 +25,8 @@ const Input = ({
       )}
     </div>
   )
-}
+})
+
+Input.displayName = 'Input'
 
 export default Input
-

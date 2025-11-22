@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.core.database import get_db
-from app.core.dependencies import get_current_user
-from app.models.user import User
+# TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
+# from app.core.dependencies import get_current_user
+# from app.models.user import User
 from app.models.product import Product
 from app.models.receipt import Receipt, ReceiptStatus
 from app.models.delivery import Delivery, DeliveryStatus
@@ -15,7 +16,7 @@ router = APIRouter()
 @router.get("/stats", response_model=DashboardStats)
 def get_dashboard_stats(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)  # TEMPORARILY COMMENTED OUT FOR TESTING
 ):
     # Total products
     total_products = db.query(Product).count()
@@ -48,7 +49,7 @@ def get_dashboard_stats(
 @router.get("/pending-operations")
 def get_pending_operations(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)  # TEMPORARILY COMMENTED OUT FOR TESTING
 ):
     receipts = db.query(Receipt).filter(
         Receipt.status.in_([ReceiptStatus.DRAFT, ReceiptStatus.READY])
@@ -84,7 +85,7 @@ def get_pending_operations(
 @router.get("/low-stock")
 def get_low_stock_items(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)  # TEMPORARILY COMMENTED OUT FOR TESTING
 ):
     # TODO: Implement proper low stock calculation
     # This is a simplified version - should calculate actual stock per product/location

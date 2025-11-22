@@ -10,7 +10,7 @@ import Button from '@/components/ui/Button'
 import { toast } from 'react-hot-toast'
 
 const ReceiptForm = ({ receipt, onCancel }) => {
-  const [items, setItems] = useState(receipt?.items || [{ product_id: '', quantity: 1 }])
+  const [items, setItems] = useState(receipt?.items || [{ product_id: '', quantity: 1, unit_cost: null }])
   const queryClient = useQueryClient()
 
   const { data: products } = useQuery({
@@ -50,7 +50,7 @@ const ReceiptForm = ({ receipt, onCancel }) => {
   })
 
   const addItem = () => {
-    setItems([...items, { product_id: '', quantity: 1 }])
+    setItems([...items, { product_id: '', quantity: 1, unit_cost: null }])
   }
 
   const removeItem = (index) => {
@@ -64,13 +64,43 @@ const ReceiptForm = ({ receipt, onCancel }) => {
   }
 
   const onSubmit = (data) => {
+    // Validate that all products are selected
+    const invalidItems = items.filter(item => !item.product_id || item.product_id === '')
+    if (invalidItems.length > 0) {
+      toast.error('Please select a product for all items')
+      return
+    }
+
+    // Validate that all quantities are valid
+    const invalidQuantities = items.filter(item => !item.quantity || parseFloat(item.quantity) <= 0)
+    if (invalidQuantities.length > 0) {
+      toast.error('Please enter valid quantities (greater than 0)')
+      return
+    }
+
+    // Convert date string to ISO datetime string
+    const scheduleDate = data.schedule_date
+      ? new Date(data.schedule_date + 'T00:00:00').toISOString()
+      : new Date().toISOString()
+
     const receiptData = {
       ...data,
-      products: items.map(item => ({
-        product_id: item.product_id,
-        quantity: parseInt(item.quantity),
-      })),
+      schedule_date: scheduleDate,
+      products: items
+        .filter(item => item.product_id && item.product_id !== '') // Filter out empty items
+        .map(item => ({
+          product_id: item.product_id,
+          quantity: parseFloat(item.quantity),
+          unit_cost: item.unit_cost ? parseFloat(item.unit_cost) : null,
+        })),
     }
+    
+    // Validate products array is not empty
+    if (receiptData.products.length === 0) {
+      toast.error('Please add at least one product')
+      return
+    }
+
     createMutation.mutate(receiptData)
   }
 
@@ -115,7 +145,7 @@ const ReceiptForm = ({ receipt, onCancel }) => {
         </div>
         <div className="space-y-3">
           {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-3 gap-4 items-end">
+            <div key={index} className="grid grid-cols-4 gap-4 items-end">
               <Select
                 label="Product"
                 options={products?.map(p => ({ value: p.id, label: `${p.sku} - ${p.name}` })) || []}
@@ -125,9 +155,18 @@ const ReceiptForm = ({ receipt, onCancel }) => {
               <Input
                 label="Quantity"
                 type="number"
+                step="0.01"
                 value={item.quantity}
                 onChange={(e) => updateItem(index, 'quantity', e.target.value)}
-                min="1"
+                min="0.01"
+              />
+              <Input
+                label="Unit Cost (optional)"
+                type="number"
+                step="0.01"
+                value={item.unit_cost || ''}
+                onChange={(e) => updateItem(index, 'unit_cost', e.target.value || null)}
+                min="0"
               />
               <Button
                 type="button"

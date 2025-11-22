@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button'
 const ProductForm = ({ onSubmit, onCancel, initialData }) => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: initialData || {},
+    mode: 'onBlur', // Only validate on blur, not on change or mount
   })
 
   return (
@@ -24,7 +25,7 @@ const ProductForm = ({ onSubmit, onCancel, initialData }) => {
 
       <Input
         label="Category"
-        {...register('category')}
+        {...register('category_id')}
       />
 
       <Input

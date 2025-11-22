@@ -11,32 +11,36 @@ const api = axios.create({
   },
 })
 
+// TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
 // Request interceptor - Add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem('token')
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`
+//     }
+//     return config
+//   },
+//   (error) => {
+//     return Promise.reject(error)
+//   }
+// )
 
+// TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
 // Response interceptor - Handle errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      window.location.href = '/login'
-      toast.error('Session expired. Please login again.')
-    } else if (error.response?.status === 403) {
-      toast.error('You do not have permission to perform this action.')
-    } else if (error.response?.data?.detail) {
+    // TEMPORARILY COMMENTED OUT FOR TESTING - Skip auth redirects
+    // if (error.response?.status === 401) {
+    //   localStorage.removeItem('token')
+    //   localStorage.removeItem('user')
+    //   window.location.href = '/login'
+    //   toast.error('Session expired. Please login again.')
+    // } else if (error.response?.status === 403) {
+    //   toast.error('You do not have permission to perform this action.')
+    // } else
+    if (error.response?.data?.detail) {
       toast.error(error.response.data.detail)
     } else {
       toast.error('An error occurred. Please try again.')

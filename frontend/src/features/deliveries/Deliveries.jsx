@@ -56,8 +56,9 @@ const Deliveries = () => {
             <button
               onClick={() => validateMutation.mutate(params.data.id)}
               className="text-primary-600 hover:text-primary-700 text-sm"
+              disabled={validateMutation.isPending}
             >
-              Validate
+              {validateMutation.isPending ? 'Validating...' : 'Validate'}
             </button>
           )}
         </div>

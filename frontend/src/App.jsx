@@ -1,7 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
+// TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
+// import { useAuth } from './context/AuthContext'
 import Layout from './components/layout/Layout'
-import PrivateRoute from './routes/PrivateRoute'
+// import PrivateRoute from './routes/PrivateRoute'
 
 // Auth pages
 import Login from './features/auth/Login'
@@ -18,13 +19,20 @@ import Warehouses from './features/settings/Warehouses'
 import Locations from './features/settings/Locations'
 
 function App() {
-  const { user } = useAuth()
+  // TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
+  // const { user } = useAuth()
 
   return (
     <Routes>
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-      <Route path="/signup" element={!user ? <SignUp /> : <Navigate to="/dashboard" />} />
+      {/* TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled */}
+      {/* <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+      <Route path="/signup" element={!user ? <SignUp /> : <Navigate to="/dashboard" />} /> */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
       
+      {/* TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled */}
+      {/* <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}> */}
+      <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="products" element={<Products />} />
@@ -34,6 +42,7 @@ function App() {
         <Route path="movements" element={<Movements />} />
         <Route path="warehouses" element={<Warehouses />} />
         <Route path="locations" element={<Locations />} />
+      </Route>
     </Routes>
   )
 }

@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.core.database import get_db
-from app.core.dependencies import get_current_user
-from app.models.user import User
+# TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
+# from app.core.dependencies import get_current_user
+# from app.models.user import User
 from app.models.stock_ledger import StockLedger
 from app.models.warehouse import Location
 from app.models.product import Product
@@ -18,7 +19,7 @@ def get_movements(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)  # TEMPORARILY COMMENTED OUT FOR TESTING
 ):
     query = db.query(StockLedger)
     
@@ -56,7 +57,7 @@ def get_movements(
 def search_movements(
     q: str = Query(..., min_length=1),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)  # TEMPORARILY COMMENTED OUT FOR TESTING
 ):
     movements = db.query(StockLedger).filter(
         StockLedger.reference.ilike(f"%{q}%")

@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List, Optional
 from app.core.database import get_db
-from app.core.dependencies import get_current_user
-from app.models.user import User
+# TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
+# from app.core.dependencies import get_current_user
+# from app.models.user import User
 from app.models.product import Product
 from app.models.stock_ledger import StockLedger
 from app.models.warehouse import Location
@@ -17,7 +18,7 @@ def get_stock(
     location_id: Optional[str] = Query(None),
     warehouse_id: Optional[str] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)  # TEMPORARILY COMMENTED OUT FOR TESTING
 ):
     # Get all products with their stock levels
     products = db.query(Product).all()
@@ -75,7 +76,7 @@ def update_stock(
     location_id: str,
     quantity: float,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)  # TEMPORARILY COMMENTED OUT FOR TESTING
 ):
     # This endpoint would typically be used for stock adjustments
     # For now, we'll create a stock ledger entry
@@ -108,7 +109,7 @@ def update_stock(
             location_id=location_id,
             quantity=difference,
             transaction_type="Adjustment",
-            reference=f"ADJ/{current_user.id[:8]}"
+            reference=f"ADJ/TEST"  # TEMPORARILY COMMENTED OUT FOR TESTING - current_user.id[:8]
         )
         db.add(adjustment)
         db.commit()

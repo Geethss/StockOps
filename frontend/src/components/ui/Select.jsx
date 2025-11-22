@@ -1,11 +1,13 @@
-const Select = ({ 
+import { forwardRef } from 'react'
+
+const Select = forwardRef(({ 
   label, 
   options = [], 
   error, 
   placeholder = 'Select...',
   className = '',
   ...props 
-}) => {
+}, ref) => {
   return (
     <div className="w-full">
       {label && (
@@ -14,6 +16,7 @@ const Select = ({
         </label>
       )}
       <select
+        ref={ref}
         className={`input ${error ? 'border-red-500 focus:ring-red-500' : ''} ${className}`}
         {...props}
       >
@@ -29,7 +32,9 @@ const Select = ({
       )}
     </div>
   )
-}
+})
+
+Select.displayName = 'Select'
 
 export default Select
 

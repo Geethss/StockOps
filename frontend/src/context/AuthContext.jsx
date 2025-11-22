@@ -12,24 +12,30 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  // TEMPORARILY COMMENTED OUT FOR TESTING - Always return authenticated state
+  const [user, setUser] = useState({
+    id: 'test-user-id',
+    email: 'test@example.com',
+    full_name: 'Test User'
+  })
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token')
-    const savedUser = localStorage.getItem('user')
-    
-    if (token && savedUser) {
-      try {
-        setUser(JSON.parse(savedUser))
-      } catch (error) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-      }
-    }
-    setLoading(false)
-  }, [])
+  // TEMPORARILY COMMENTED OUT FOR TESTING - Authentication disabled
+  // useEffect(() => {
+  //   // Check if user is logged in
+  //   const token = localStorage.getItem('token')
+  //   const savedUser = localStorage.getItem('user')
+  //   
+  //   if (token && savedUser) {
+  //     try {
+  //       setUser(JSON.parse(savedUser))
+  //     } catch (error) {
+  //       localStorage.removeItem('token')
+  //       localStorage.removeItem('user')
+  //     }
+  //   }
+  //   setLoading(false)
+  // }, [])
 
   const login = async (email, password) => {
     try {
