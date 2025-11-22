@@ -2,6 +2,8 @@
 
 The goal is to build a modular **Inventory Management System (IMS)** that digitizes and streamlines all stock-related operations within a business. This centralized, real-time, and easy-to-use application is designed to replace manual registers, Excel sheets, and scattered tracking methods.
 
+Video Link - https://youtu.be/bNxi7BokvM4
+
 ## Team Details
 
 | Name |
