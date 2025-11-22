@@ -6,8 +6,13 @@ export const movementService = {
     return response.data
   },
 
+  getTransactionTypes: async () => {
+    const response = await api.get('/movements/transaction-types')
+    return response.data
+  },
+
   searchMovements: async (query) => {
-    const response = await api.get('/movements/search', { params: { q: query } })
+    const response = await api.get('/movements', { params: { search: query } })
     return response.data
   },
 

@@ -49,6 +49,10 @@ async def emit_delivery_created(delivery_data: dict, warehouse_id: str):
     """Emit delivery creation event"""
     await sio.emit('delivery:created', delivery_data, room=f"warehouse:{warehouse_id}")
 
+async def emit_transfer_created(transfer_data: dict, warehouse_id: str):
+    """Emit transfer creation event"""
+    await sio.emit('transfer:created', transfer_data, room=f"warehouse:{warehouse_id}")
+
 async def emit_low_stock_alert(product_id: str, warehouse_id: str, current_stock: float):
     """Emit low stock alert"""
     await sio.emit('low_stock:alert', {

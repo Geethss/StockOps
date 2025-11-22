@@ -14,6 +14,7 @@ import Products from './features/products/Products'
 import Stock from './features/stock/Stock'
 import Receipts from './features/receipts/Receipts'
 import Deliveries from './features/deliveries/Deliveries'
+import Transfers from './features/transfers/Transfers'
 import Movements from './features/movements/Movements'
 import Warehouses from './features/settings/Warehouses'
 import Locations from './features/settings/Locations'
@@ -39,6 +40,7 @@ function App() {
         <Route path="stock" element={<Stock />} />
         <Route path="receipts" element={<Receipts />} />
         <Route path="deliveries" element={<Deliveries />} />
+        <Route path="transfers" element={<Transfers />} />
         <Route path="movements" element={<Movements />} />
         <Route path="warehouses" element={<Warehouses />} />
         <Route path="locations" element={<Locations />} />

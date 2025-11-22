@@ -1,18 +1,32 @@
 # StockMaster - Inventory Management System (IMS)
 
-A full-stack Inventory Management System built with React and FastAPI.
+The goal is to build a modular **Inventory Management System (IMS)** that digitizes and streamlines all stock-related operations within a business. This centralized, real-time, and easy-to-use application is designed to replace manual registers, Excel sheets, and scattered tracking methods.
+
+## Team Details
+
+| Name |
+|---|
+| Pedamallu Sri Geethanjali |
+| Deepthi Marreddy |
+| Sydam Manikyala Rao |
+| Sushma Kothamasu |
+
+## Reviewer Name
+
+Aman Patel
 
 ## 🚀 Features
 
-- **Dashboard** - Overview of inventory operations with KPIs
+- **Dashboard** - Overview of inventory operations with KPIs and activity metrics
 - **Product Management** - Create and manage products with SKU, categories, and unit of measure
-- **Stock Management** - View and update stock levels per location
-- **Receipts** - Manage incoming stock from suppliers
-- **Deliveries** - Manage outgoing stock deliveries
-- **Move History** - Track all stock movements
-- **Warehouse & Location Management** - Manage warehouses and their locations
-- **Real-time Updates** - Socket.IO integration for live stock updates
-- **Authentication** - Secure user authentication with JWT
+- **Stock Management** - Real-time stock levels, filters, and **Stock Adjustments**
+- **Receipts** - Manage incoming stock with validation and **Kanban View**
+- **Deliveries** - Manage outgoing deliveries with validation and **Kanban View**
+- **Internal Transfers** - Move stock between locations with validation and **Kanban View**
+- **Move History** - Comprehensive log of all stock movements (Receipts, Deliveries, Transfers, Adjustments)
+- **Warehouse & Location Management** - Configure multi-warehouse and multi-location setups
+- **Real-time Updates** - Socket.IO integration for live stock and operation updates
+- **Authentication** - Secure user authentication with JWT (Temporarily disabled for testing)
 
 ## 📋 Tech Stack
 
@@ -21,7 +35,8 @@ A full-stack Inventory Management System built with React and FastAPI.
 - Tailwind CSS
 - TanStack Query
 - React Hook Form
-- AG Grid
+- AG Grid (Data Tables)
+- Kanban Board (Custom Drag-and-Drop)
 - Socket.IO Client
 
 ### Backend
@@ -38,7 +53,7 @@ A full-stack Inventory Management System built with React and FastAPI.
 ### Prerequisites
 - Node.js 18+
 - Python 3.11+
-- PostgreSQL 16+
+- PostgreSQL 16+ (or Neon DB)
 
 ### Backend Setup
 
@@ -60,14 +75,15 @@ pip install -r requirements.txt
 
 4. Create `.env` file:
 ```bash
-cp .env.example .env
+cp .env.template .env
 ```
 
-5. Update `.env` with your database credentials
+5. Update `.env` with your database credentials (`DATABASE_URL`).
 
-6. Create database and run migrations:
+6. Create database migrations and apply them:
 ```bash
-createdb stockmaster
+# If running for the first time or after adding new models (like Transfers):
+alembic revision --autogenerate -m "Add transfers table"
 alembic upgrade head
 ```
 
@@ -93,9 +109,9 @@ npm install
 cp .env.example .env
 ```
 
-4. Update `.env` with API URLs:
+4. Update `.env` with API URLs (default provided):
 ```
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8000/api/v1
 VITE_SOCKET_URL=http://localhost:8000
 ```
 
@@ -107,8 +123,8 @@ npm run dev
 ## 📚 API Documentation
 
 Once the backend is running, visit:
-- **Swagger UI**: http://localhost:8000/api/docs
-- **ReDoc**: http://localhost:8000/api/redoc
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
 
 ## 📁 Project Structure
 
@@ -116,19 +132,19 @@ Once the backend is running, visit:
 StockOps/
 ├── frontend/          # React frontend
 │   ├── src/
-│   │   ├── components/
-│   │   ├── features/
-│   │   ├── hooks/
-│   │   ├── lib/
-│   │   └── routes/
+│   │   ├── components/ # UI & Common components (Kanban, etc.)
+│   │   ├── features/   # Feature-based modules (Products, Stock, Transfers, etc.)
+│   │   ├── hooks/      # Custom React hooks
+│   │   ├── lib/        # Configurations & utilities
+│   │   └── routes/     # Route definitions
 │   └── package.json
 ├── backend/           # FastAPI backend
 │   ├── app/
-│   │   ├── api/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── services/
-│   │   └── websocket/
+│   │   ├── api/        # API Endpoints
+│   │   ├── models/     # Database Models
+│   │   ├── schemas/    # Pydantic Schemas
+│   │   ├── services/   # Business Logic
+│   │   └── websocket/  # Socket.IO Handlers
 │   └── requirements.txt
 └── README.md
 ```
@@ -136,8 +152,8 @@ StockOps/
 ## 🔐 Authentication
 
 The system uses JWT tokens for authentication. Tokens are stored in localStorage and automatically included in API requests.
+*Note: Authentication logic is currently commented out for development and testing ease.*
 
 ## 📝 License
 
 MIT
-

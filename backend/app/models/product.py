@@ -32,4 +32,5 @@ class Product(Base):
     stock_entries = relationship("StockLedger", back_populates="product")
     receipt_items = relationship("ReceiptItem", back_populates="product")
     delivery_items = relationship("DeliveryItem", back_populates="product")
+    transfer_items = relationship("TransferItem", back_populates="product")
 

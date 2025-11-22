@@ -13,6 +13,7 @@ const Sidebar = () => {
       children: [
         { path: '/receipts', label: 'Receipts' },
         { path: '/deliveries', label: 'Deliveries' },
+        { path: '/transfers', label: 'Transfers' },
         { path: '/movements', label: 'Move History' },
       ]
     },

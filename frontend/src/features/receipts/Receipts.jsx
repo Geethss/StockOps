@@ -8,6 +8,7 @@ import ReceiptForm from './ReceiptForm'
 import SearchBar from '@/components/common/SearchBar'
 import ViewToggle from '@/components/common/ViewToggle'
 import StatusBadge from '@/components/common/StatusBadge'
+import KanbanBoard from '@/components/common/KanbanBoard'
 import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
 import { toast } from 'react-hot-toast'
@@ -107,9 +108,49 @@ const Receipts = () => {
           )}
         </div>
       ) : (
-        <div className="card">
-          <p className="text-gray-600">Kanban view coming soon...</p>
-        </div>
+        <KanbanBoard
+          items={receipts || []}
+          columns={[
+            { value: 'Draft', label: 'Draft', icon: '📝' },
+            { value: 'Ready', label: 'Ready', icon: '✅' },
+            { value: 'Done', label: 'Done', icon: '✔️' },
+          ]}
+          getStatusValue={(item) => item.status}
+          onItemClick={(item) => {
+            setSelectedReceipt(item)
+            setShowForm(true)
+          }}
+          isLoading={isLoading}
+          renderItem={(item) => (
+            <div className="space-y-2">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900 text-sm">{item.reference}</h4>
+                  <p className="text-xs text-gray-600 mt-1">{item.receive_from}</p>
+                </div>
+                <StatusBadge status={item.status} />
+              </div>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{item.warehouse_name || '-'}</span>
+                {item.schedule_date && (
+                  <span>{formatDate(item.schedule_date)}</span>
+                )}
+              </div>
+              {item.status === 'Ready' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    validateMutation.mutate(item.id)
+                  }}
+                  className="w-full mt-2 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded hover:bg-primary-700 disabled:opacity-50"
+                  disabled={validateMutation.isPending}
+                >
+                  {validateMutation.isPending ? 'Validating...' : 'Validate'}
+                </button>
+              )}
+            </div>
+          )}
+        />
       )}
 
       <Modal
